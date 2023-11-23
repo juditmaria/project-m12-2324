@@ -3,6 +3,15 @@ from wtforms import PasswordField, StringField, DecimalField, SubmitField, Selec
 from wtforms.validators import DataRequired, NumberRange, InputRequired, Email
 import decimal
 
+class LoginForm(FlaskForm):
+    email = StringField(
+        validators = [Email(), DataRequired()]
+    )
+    password = PasswordField(
+        validators=[ DataRequired()]
+    )
+    submit = SubmitField()
+
 class RegisterForm(FlaskForm):
     name = StringField(
         validators = [DataRequired()]

@@ -17,7 +17,9 @@ def init():
 
 @main_bp.route('/login')
 def login():
-    return render_template('login.html')
+    form = LoginForm()
+    if form.validate_on_sumbit():
+        return render_template('login.html')
 
 @main_bp.route('/register')
 def register():

@@ -1,28 +1,29 @@
 <!doctype html>
 <title>{% block title %}{% endblock %} - Flaskr</title>
 <link rel="stylesheet" href="../static/css/styles.css">
-<nav class="navbar navbar-expand-lg bg-secondary text-uppercase fixed-top" id="mainNav">
-  <h1>Flaskr</h1>
-  <ul class="navbar-nav ms-auto">
-    {% if g.user %}
-      <li class="nav-item mx-0 mx-lg-1"><span>{{ g.user['username'] }}</span>
-      <li class="nav-item mx-0 mx-lg-1"><a class="nav-link py-3 px-0 px-lg-3 rounded" href="{{ url_for('main_bp.init') }}">Log Out</a>
-    {% else %}
-      <li class="nav-item mx-0 mx-lg-1"><a class="nav-link py-3 px-0 px-lg-3 rounded" href="{{ url_for('main_bp.register') }}">Register</a>
-      <li class="nav-item mx-0 mx-lg-1"><a class="nav-link py-3 px-0 px-lg-3 rounded" href="{{ url_for('main_bp.login') }}">Log In</a>
-    {% endif %}
-  </ul>
+<nav class="navbar navbar-light bg-light static-top">
+  <div class="container">
+    <a class="navbar-brand" href="{{ url_for('main_bp.init') }}">Wannapop</a>
+    <ul>
+      {% if g.user %}
+        <span>{{ g.user['username'] }}</span>
+        <a href="{{ url_for('main_bp.init') }}">Log Out</a>
+      {% else %}
+        <a class="btn btn-primary" href="{{ url_for('main_bp.register') }}">Register</a>
+        <a class="btn btn-primary" href="{{ url_for('main_bp.login') }}">Log In</a>
+      {% endif %}
+    </ul>
+  </div>
 </nav>
 <section>
-  <header class="masthead bg-primary text-white text-center">
+  <header class="masthead">
     {% block header %}{% endblock %}
   </header>
   {% for message in get_flashed_messages() %}
     <div class="flash">{{ message }}</div>
   {% endfor %}
   {% block content %}{% endblock %}
-
-  
 </section>
+
 <script src="../static/scripts.js"></script>
 
