@@ -15,6 +15,14 @@ main_bp = Blueprint(
 def init():
     return redirect(url_for('main_bp.product_list'))
 
+@main_bp.route('/login')
+def login():
+    return render_template('login.html')
+
+@main_bp.route('/register')
+def register():
+    return render_template('register.html')
+
 @main_bp.route('/products/list')
 def product_list():
     # select amb join que retorna una llista dwe resultats
