@@ -32,7 +32,7 @@ def login():
             current_app.logger.debug("[login] login OK")
             login_user(user)
             return redirect(url_for("main_bp.init"))
-
+    
         # si arriba aquí, és que no s'ha autenticat correctament
         current_app.logger.debug("[login] login ERROR")
         return redirect(url_for("auth_bp.login"))
@@ -47,6 +47,9 @@ def load_user(email):
         user_or_none = db.session.query(User).filter(User.email == email).one_or_none()
         return user_or_none
     return None
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
 
 @login_manager.unauthorized_handler
 def unauthorized():
