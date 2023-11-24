@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, redirect, url_for, flash
 from .models import Product, Category
-from .forms import ProductForm, DeleteForm
+from .forms import ProductForm, DeleteForm, LoginForm, RegisterForm
 from werkzeug.utils import secure_filename
 from . import db_manager as db
 import uuid
@@ -15,6 +15,27 @@ main_bp = Blueprint(
 def init():
     return redirect(url_for('main_bp.product_list'))
 
+<<<<<<< refs/remotes/origin/b0.2
+=======
+@main_bp.route('/login', methods=['GET', 'POST'])
+def login():
+    form = LoginForm()
+
+    if form.validate_on_submit():
+        return redirect(url_for('main_bp.product_list'))
+    
+    return render_template('login.html', form=form)
+
+@main_bp.route('/register', methods=['GET', 'POST'])
+def register():
+    form = RegisterForm()
+
+    if form.validate_on_submit():
+        return redirect(url_for('main_bp.login'))
+    
+    return render_template('register.html', form=form)
+
+>>>>>>> local
 @main_bp.route('/products/list')
 def product_list():
     # select amb join que retorna una llista dwe resultats

@@ -1,0 +1,33 @@
+{% extends 'layout.html' %}
+
+{% block header %}
+<div class="container position-relative">
+  <div class="row justify-content-center">
+      <div class="col-xl-6">
+        <div class="text-center text-white">
+          <h1>{% block title %}Register{% endblock %}</h1>
+
+          <form method="post">
+            {{ form.hidden_tag() }}
+            <br>
+            <div class="form-group">
+              {{ form.email(class="form-control form-control-lg", id="emailAddress", type="email", placeholder="Email Address", **{"data-sb-validations": "required,email"} ) }}
+            </div>
+            <br>
+            <div class="form-group">
+              {{ form.password(class="form-control form-control-lg", id="password", type="password", placeholder="Password", **{"data-sb-validations": "required,password"} ) }}
+            </div>
+            <br>
+            <div class="form-group">
+              {{ form.password(class="form-control form-control-lg", id="password", type="password", placeholder="Confirm password", **{"data-sb-validations": "required,password"} ) }}
+            </div>
+            <br>
+            <div class="form-group">
+              {{ form.submit(class="btn btn-primary btn-lg", value="Register") }}
+            </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
