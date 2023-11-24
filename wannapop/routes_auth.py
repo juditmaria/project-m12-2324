@@ -104,8 +104,8 @@ def register():
     # Si el formulario no se ha enviado o no es válido, muestra el formulario de registro.
     return render_template('register.html', form=form)
 
-# @auth_bp.route("/logout")
-# @login_required
-# def logout():
-#     logout_user()
-#     return redirect(url_for("auth_bp.login"))
+@auth_bp.route("/logout")
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for("auth_bp.login"))
