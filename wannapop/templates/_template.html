@@ -11,6 +11,7 @@
 <body>
    <h2>Wannapop</h2>
    <p>{{ current_user.email }} <button><a href="/logout">LOGOUT</a></button></p>
+   <a class="nav-link" href="/profile">Perfil</a>
    <hr />
    {% with messages = get_flashed_messages(with_categories=true) %}
    {% if messages %}

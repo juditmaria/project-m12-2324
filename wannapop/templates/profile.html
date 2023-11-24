@@ -1,0 +1,18 @@
+{% extends 'layout.html' %}
+
+{% block header %}
+  <div class="container">
+    <h2>Perfil de Usuario</h2>
+    <hr>
+    <dl class="row">
+      <dt class="col-sm-3">Nombre:</dt>
+      <dd class="col-sm-9">{{ user.name }}</dd>
+
+      <dt class="col-sm-3">Correo Electrónico:</dt>
+      <dd class="col-sm-9">{{ user.email }}</dd>
+
+      <dt class="col-sm-3">Rol:</dt>
+      <dd class="col-sm-9">{{ user.role }}</dd>
+    </dl>
+  </div>
+{% endblock %}
