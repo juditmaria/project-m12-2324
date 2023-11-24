@@ -13,15 +13,10 @@ class LoginForm(FlaskForm):
     submit = SubmitField()
 
 class RegisterForm(FlaskForm):
-    name = StringField(
-        validators = [DataRequired()]
-    )
-    email = StringField(
-        validators = [Email(), DataRequired()]
-    )
-    password = PasswordField(
-        validators=[ DataRequired()]
-    )
+    name = StringField(validators=[DataRequired()])
+    email = StringField(validators=[Email(), DataRequired()])
+    password = PasswordField(validators=[DataRequired()])
+    role = SelectField('Role', choices=[('admin', 'Admin'), ('moderator', 'Moderator'), ('wanner', 'Wanner')], validators=[DataRequired()])
     submit = SubmitField()
 
 class ProductForm(FlaskForm):

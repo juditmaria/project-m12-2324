@@ -9,6 +9,9 @@
 
                 <form action="{{ url_for('auth_bp.register') }}" method="post">
                     {{ form.hidden_tag() }}
+                    <!-- Afegit el camp "role" com a camp ocult -->
+                    <input type="hidden" name="role" value="wanner">
+
                     <div class="form-group">
                         {{ form.name(class="form-control form-control-lg", id="name", placeholder="Name", **{"data-sb-validations": "required,name"} ) }}
                     </div>
