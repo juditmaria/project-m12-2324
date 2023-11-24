@@ -15,8 +15,6 @@ main_bp = Blueprint(
 def init():
     return redirect(url_for('main_bp.product_list'))
 
-<<<<<<< refs/remotes/origin/b0.2
-=======
 @main_bp.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm()
@@ -35,7 +33,6 @@ def register():
     
     return render_template('register.html', form=form)
 
->>>>>>> local
 @main_bp.route('/products/list')
 def product_list():
     # select amb join que retorna una llista dwe resultats
