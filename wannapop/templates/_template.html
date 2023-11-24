@@ -8,9 +8,9 @@
    <title>Wannapop</title>
    <link href="/static/css/wannapop.css" rel="stylesheet">
 </head>
-
 <body>
    <h2>Wannapop</h2>
+   <p>{{ current_user.email }} <button><a href="/logout">LOGOUT</a></button></p>
    <hr />
    {% with messages = get_flashed_messages(with_categories=true) %}
    {% if messages %}
