@@ -7,6 +7,7 @@ from .helper_role import Action, perm_required
 from . import db_manager as db
 import uuid
 import os
+from flask import current_app
 
 # Blueprint
 products_bp = Blueprint("products_bp", __name__)

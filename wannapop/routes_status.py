@@ -3,6 +3,7 @@ from .models import Status
 from .forms import StatusForm, DeleteForm
 from .helper_role import Action, perm_required
 from . import db_manager as db
+from flask import current_app
 
 # Blueprint
 status_bp = Blueprint("status_bp", __name__)

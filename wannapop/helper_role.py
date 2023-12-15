@@ -2,6 +2,8 @@ from flask import current_app
 from flask_login import current_user
 from flask_principal import identity_loaded, identity_changed, ActionNeed, RoleNeed, Permission, Identity, AnonymousIdentity
 from enum import Enum
+from flask import current_app
+
 
 class Role(str, Enum):
     wanner    = "wanner"
