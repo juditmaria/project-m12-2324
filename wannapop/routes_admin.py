@@ -1,8 +1,10 @@
 from flask import Blueprint, render_template
-from .models import User
+from .models import User, Product, Category, Status, BannedProduct  
 from .helper_role import Role, role_required
 from . import db_manager as db
-from flask import current_app
+from .helper_role import Action, perm_required
+from flask import current_app, request, redirect, url_for
+from .forms import BanForm
 
 # Blueprint
 admin_bp = Blueprint("admin_bp", __name__)
@@ -17,3 +19,48 @@ def admin_index():
 def admin_users():
     users = db.session.query(User).all()
     return render_template('admin/users_list.html', users=users)
+
+@admin_bp.route('/products/ban/<int:product_id>', methods=['GET', 'POST'])
+@role_required(Role.moderator)
+@perm_required(Action.products_read)
+def product_ban(product_id):
+    # Select with join and one result
+    result = db.session.query(Product, Category, Status).join(Category).join(Status).filter(Product.id == product_id).one_or_none()
+    product = db.session.query(Product).filter(Product.id == product_id).one_or_none()
+
+    (product, category, status) = result
+
+    # Handle the form submission
+    form = BanForm(request.form)
+    if request.method == 'POST' and form.validate():
+        # Create a BannedProduct instance and add it to the database
+        banned_product = BannedProduct(product_id=product.id, justification=form.reason.data)
+        db.session.add(banned_product)
+        db.session.commit()
+
+        return redirect(url_for('admin_bp.admin_index'))
+
+    return render_template('products/ban.html', product=product, category=category, status=status, form=form)
+
+
+@admin_bp.route('/products/unban/<int:product_id>')
+@role_required(Role.moderator)
+@perm_required(Action.products_read)
+def product_unban(product_id):
+    # Select with join and one result
+    result = db.session.query(Product, Category, Status).join(Category).join(Status).filter(Product.id == product_id).one_or_none()
+    product = db.session.query(Product).filter(Product.id == product_id).one_or_none()
+
+    (product, category, status) = result
+
+    # Handle the form submission
+    form = BanForm(request.form)
+    if request.method == 'POST' and form.validate():
+        # Create a BannedProduct instance and add it to the database
+        banned_product = BannedProduct(product_id=product.id, justification=form.reason.data)
+        db.session.delete(banned_product)
+        db.session.commit()
+
+        return redirect(url_for('admin_bp.admin_index'))
+
+    return render_template('products/unban.html', product=product, category=category, status=status)

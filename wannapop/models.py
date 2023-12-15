@@ -92,3 +92,11 @@ class Status(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, nullable=False)
     slug = db.Column(db.String, nullable=False)
+
+class BannedProduct(db.Model):
+    __tablename__ = "banned_products"
+    id = db.Column(db.Integer, primary_key=True)
+    product_id = db.Column(db.Integer, db.ForeignKey("products.id"), nullable=False)
+    justification = db.Column(db.String, nullable=False)
+    banned_at = db.Column(db.DateTime, server_default=func.now())
+    unbanned_at = db.Column(db.DateTime, nullable=True)

@@ -21,4 +21,4 @@ class Config:
 
     EXTERNAL_URL = environ.get('EXTERNAL_URL')
 
-    DEBUG = environ.get('DEBUG', True)
+    DEBUG = environ.get('DEBUG', False)

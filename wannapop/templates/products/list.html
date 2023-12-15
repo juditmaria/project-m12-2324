@@ -35,6 +35,9 @@ Productes
 				<a href="/products/delete/{{ product.id }}" alt="Eliminar">❌</a>
 				{% endif %}
 			</td>
+			<td>
+				<a href="/products/ban/{{ product.id }}" alt="Ban">🚫</a>
+			</td>
 		</tr>
 		{% endfor %}
 	</tbody>
