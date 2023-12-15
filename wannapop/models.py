@@ -21,9 +21,8 @@ class User(UserMixin, db.Model):
     
     @hybrid_property
     def password(self):
-        # https://stackoverflow.com/a/31915355
         return ""
-    
+
     @password.setter
     def password(self, plain_text_password):
         self.__password = generate_password_hash(plain_text_password, method="scrypt")
@@ -43,7 +42,7 @@ class User(UserMixin, db.Model):
     def is_wanner(self):
         return self.role == "wanner"
 
-    def is_action_allowed_to_product(self, action, product = None):
+    def is_action_allowed_to_product(self, action, product=None):
         from .helper_role import _permissions, Action
 
         current_permissions = _permissions[self.role]
@@ -53,19 +52,16 @@ class User(UserMixin, db.Model):
         if not action in current_permissions:
             return False
         
-        # Un usuari wanner sols pot modificar el seu propi producte
-        if (action == Action.products_update and self.is_wanner()):
+        if action == Action.products_update and self.is_wanner():
             if not product:
                 return False
             return self.id == product.seller_id
         
-        # Un usuari wanner sols pot eliminar el seu propi producte
-        if (action == Action.products_delete and self.is_wanner()):
+        if action == Action.products_delete and self.is_wanner():
             if not product:
                 return False
             return self.id == product.seller_id
         
-        # si hem arribat fins aquí, l'usuari té permisos
         return True
 
 class Product(db.Model):
@@ -92,3 +88,28 @@ class Status(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, nullable=False)
     slug = db.Column(db.String, nullable=False)
+
+class BlockedUser(db.Model):
+    __tablename__ = "blocked_users"
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), primary_key=True)
+    message = db.Column(db.String, nullable=False)
+    created = db.Column(db.DateTime, server_default=func.now())
+
+class BannedProduct(db.Model):
+    __tablename__ = "banned_products"
+    product_id = db.Column(db.Integer, db.ForeignKey("products.id"), primary_key=True)
+    reason = db.Column(db.String, nullable=False)
+    created = db.Column(db.DateTime, server_default=func.now())
+
+class Order(db.Model):
+    __tablename__ = "orders"
+    id = db.Column(db.Integer, primary_key=True)
+    product_id = db.Column(db.Integer, db.ForeignKey("products.id"), nullable=False)
+    buyer_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+    offer = db.Column(db.Numeric(precision=10, scale=2), nullable=False)
+    created = db.Column(db.DateTime, server_default=func.now())
+
+class ConfirmedOrder(db.Model):
+    __tablename__ = "confirmed_orders"
+    order_id = db.Column(db.Integer, db.ForeignKey("orders.id"), primary_key=True)
+    created = db.Column(db.DateTime, server_default=func.now())

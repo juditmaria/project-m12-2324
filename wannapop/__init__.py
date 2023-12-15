@@ -1,8 +1,8 @@
 from flask import Flask
-from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_principal import Principal
+from flask_migrate import Migrate
 from .helper_mail import MailManager
 from werkzeug.local import LocalProxy
 from flask import current_app
@@ -15,11 +15,11 @@ login_manager = LoginManager()
 principal_manager = Principal()
 mail_manager = MailManager()
 toolbar = DebugToolbarExtension()
+migrate = Migrate()  # Inicialización de Flask-Migrate
 
 def create_app():
-    # Construct the core app object
     app = Flask(__name__)
-
+    
     # Llegeixo la configuració del config.py de l'arrel
     app.config.from_object('config.Config')
 
@@ -43,6 +43,9 @@ def create_app():
         
         # Registra comandes
         app.cli.add_command(commands.db_cli)
+
+        # Inicializa Flask-Migrate con la aplicación y la instancia de SQLAlchemy
+        migrate.init_app(app, db_manager)
 
     app.logger.info("Aplicació iniciada")
 

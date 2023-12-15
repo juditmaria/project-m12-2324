@@ -6,24 +6,41 @@ Usuaris
 
 {% block content %}
 <table class="table table-bordered table-striped" style="background-color: #fefefe;">
-	<thead>
-		<tr>
-			<th>ID</th>
-			<th>NOM</th>
-			<th>EMAIL</th>
-			<th>ROL</th>
-		</tr>
-	</thead>
-	<tbody>
-		{% for user in users %}
-		<tr>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>NOM</th>
+            <th>EMAIL</th>
+            <th>ROL</th>
+            <th>ACCIÓNS</th>
+            <th>MOTIU DEL BLOQUEIG</th>  {# Agregamos la columna para mostrar el motivo del bloqueo #}
+        </tr>
+    </thead>
+    <tbody>
+        {% for user in users %}
+        <tr>
             <td>{{ user.id }}</td>
             <td>{{ user.name }}</td>
             <td>{{ user.email }}</td>
             <td>{{ user.role }}</td>
-		</tr>
-		{% endfor %}
-	</tbody>
+            <td>
+                <form method="post" action="{{ url_for('admin_bp.admin_users') }}">
+                    <input type="hidden" name="user_id" value="{{ user.id }}">
+                    <input type="text" name="message" placeholder="Motiu del bloqueig" class="form-control" required>  {# Agregamos el campo para el mensaje del bloqueo #}
+                    <button type="submit" name="action" value="block" class="btn btn-danger btn-sm">Bloquejar</button>
+                    <button type="submit" name="action" value="unblock" class="btn btn-success btn-sm">Desbloquejar</button>
+                </form>
+            </td>
+            <td>
+                {% if user.blocked %}
+                    {{ user.blocked.message }}
+                {% else %}
+                    No està bloquejat
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
 </table>
 <a class="btn btn-outline-dark btn-xl" href="/admin">&#x3c;&#x3c; Tornar la pàgina d'administració</a>
 
