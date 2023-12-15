@@ -3,7 +3,6 @@ from flask_login import current_user, login_required, logout_user
 from .forms import ProfileForm
 from . import db_manager as db, mail_manager
 import secrets
-from flask import current_app
 
 # Blueprint
 main_bp = Blueprint("main_bp", __name__)

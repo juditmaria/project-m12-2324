@@ -5,15 +5,12 @@ from .forms import LoginForm, RegisterForm, ResendForm
 from .helper_role import notify_identity_changed, Role
 from .models import User
 import secrets
-from flask import current_app
 
 # Blueprint
 auth_bp = Blueprint("auth_bp", __name__)
 
 @auth_bp.route("/login", methods=["GET", "POST"])
 def login():
-    current_app.logger.debug('(=^·w·^=) DEBUGANDO')
-
     # Si ja està autenticat, sortim d'aquí
     if current_user.is_authenticated:
         return redirect(url_for("main_bp.init"))

@@ -2,7 +2,6 @@ from flask import Blueprint, render_template
 from .models import User
 from .helper_role import Role, role_required
 from . import db_manager as db
-from flask import current_app
 
 # Blueprint
 admin_bp = Blueprint("admin_bp", __name__)

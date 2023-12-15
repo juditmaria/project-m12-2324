@@ -3,7 +3,6 @@ from .models import Category
 from .forms import CategoryForm, DeleteForm
 from .helper_role import Action, perm_required
 from . import db_manager as db
-from flask import current_app
 
 # Blueprint
 category_bp = Blueprint("category_bp", __name__)
