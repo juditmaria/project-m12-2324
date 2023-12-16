@@ -77,7 +77,6 @@ def product_create():
 @products_bp.route('/products/read/<int:product_id>')
 @perm_required(Action.products_read)
 def product_read(product_id):
-    # select amb join i 1 resultat
     result = db.session.query(Product, Category, Status).join(Category).join(Status).filter(Product.id == product_id).one_or_none()
 
     if not result:
@@ -85,7 +84,6 @@ def product_read(product_id):
 
     (product, category, status) = result
 
-    # Obtener información del motivo de baneo si existe
     banned_info = BannedProduct.query.filter_by(product_id=product.id).first()
 
     return render_template('products/read.html', product=product, category=category, status=status, banned_info=banned_info)

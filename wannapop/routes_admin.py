@@ -24,16 +24,13 @@ def admin_users():
 @role_required(Role.moderator)
 @perm_required(Action.products_read)
 def product_ban(product_id):
-    # Select with join and one result
     result = db.session.query(Product, Category, Status).join(Category).join(Status).filter(Product.id == product_id).one_or_none()
     product = db.session.query(Product).filter(Product.id == product_id).one_or_none()
 
     (product, category, status) = result
 
-    # Handle the form submission
     form = BanForm(request.form)
     if request.method == 'POST' and form.validate():
-        # Create a BannedProduct instance and add it to the database
         banned_product = BannedProduct(product_id=product.id, justification=form.reason.data)
         db.session.add(banned_product)
         db.session.commit()
@@ -52,10 +49,9 @@ def product_unban(product_id):
 
     (product, category, status) = result
 
-    form = DeleteForm(request.form)  # Se asume que ya tienes un formulario DeleteForm definido
+    form = DeleteForm(request.form)  
 
     if request.method == 'POST' and form.validate():
-        # Buscar y eliminar el registro de BannedProduct asociado al producto
         banned_product = db.session.query(BannedProduct).filter_by(product_id=product.id).first()
         if banned_product:
             db.session.delete(banned_product)
