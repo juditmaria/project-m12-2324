@@ -14,6 +14,10 @@ Unban del Producto con ID: {{ product.id }}
 </ul>
 <p><img src="/static/products/{{ product.photo }}" alt="{{ product.title }}" /></p>
 
-<!-- Enlace para enviar la solicitud de "unban" sin un formulario -->
-<a href="{{ url_for('admin_bp.product_unban', product_id=product.id) }}" class="btn btn-success">Unban Product</a>
+<!-- Formulario para enviar la solicitud de "unban" -->
+<form method="POST" action="{{ url_for('admin_bp.product_unban', product_id=product.id) }}">
+    {{ form.csrf_token }}
+    {{ form.hidden_tag() }}
+    <button type="submit" class="btn btn-success">Unban Product</button>
+</form>
 {% endblock %}

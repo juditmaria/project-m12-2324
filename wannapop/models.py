@@ -80,6 +80,7 @@ class Product(db.Model):
     seller_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
     created = db.Column(db.DateTime, server_default=func.now())
     updated = db.Column(db.DateTime, server_default=func.now(), onupdate=func.now())
+    banned_info = db.relationship("BannedProduct", backref="product", uselist=False)
 
 class Category(db.Model):
     __tablename__ = "categories"
@@ -99,4 +100,4 @@ class BannedProduct(db.Model):
     product_id = db.Column(db.Integer, db.ForeignKey("products.id"), nullable=False)
     justification = db.Column(db.String, nullable=False)
     banned_at = db.Column(db.DateTime, server_default=func.now())
-    unbanned_at = db.Column(db.DateTime, nullable=True)
+    product_id = db.Column(db.Integer, db.ForeignKey("products.id"), nullable=False)

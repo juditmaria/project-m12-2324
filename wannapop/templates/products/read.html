@@ -13,7 +13,11 @@ Producte {{ product.id }}
     <li>Estat: {{ status.name }} </li>
 </ul>
 <p><img src="/static/products/{{ product.photo }}" alt="{{ product.title }}" /></p>
-
+{% if banned_info %}
+    <div class="alert alert-danger" role="alert">
+        Aquest producte ha estat prohibit. Raó: {{ banned_info.justification }}
+    </div>
+{% endif %}
 <a class="btn btn-outline-dark btn-xl" href="/products/list">&#x3c;&#x3c; Tornar al llistat</a>
 
 {% if current_user.is_action_allowed_to_product(Action.products_update, product) %}
@@ -22,6 +26,9 @@ Producte {{ product.id }}
 
 {% if current_user.is_action_allowed_to_product(Action.products_delete, product) %}
 <a class="btn btn-danger btn-xl" href="/products/delete/{{ product.id }}">Esborrar producte</a>
+{% endif %}
+{% if current_user.is_action_allowed_to_product(Action.products_moderate, product) %}
+    <a class="btn btn-primary btn-xl" href="/products/unban/{{ product.id }}">Unban</a>
 {% endif %}
 
 {% endblock %}

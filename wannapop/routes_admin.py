@@ -4,7 +4,7 @@ from .helper_role import Role, role_required
 from . import db_manager as db
 from .helper_role import Action, perm_required
 from flask import current_app, request, redirect, url_for
-from .forms import BanForm
+from .forms import BanForm, DeleteForm
 
 # Blueprint
 admin_bp = Blueprint("admin_bp", __name__)
@@ -43,24 +43,24 @@ def product_ban(product_id):
     return render_template('products/ban.html', product=product, category=category, status=status, form=form)
 
 
-@admin_bp.route('/products/unban/<int:product_id>')
+@admin_bp.route('/products/unban/<int:product_id>', methods=['GET', 'POST'])
 @role_required(Role.moderator)
 @perm_required(Action.products_read)
 def product_unban(product_id):
-    # Select with join and one result
     result = db.session.query(Product, Category, Status).join(Category).join(Status).filter(Product.id == product_id).one_or_none()
     product = db.session.query(Product).filter(Product.id == product_id).one_or_none()
 
     (product, category, status) = result
 
-    # Handle the form submission
-    form = BanForm(request.form)
+    form = DeleteForm(request.form)  # Se asume que ya tienes un formulario DeleteForm definido
+
     if request.method == 'POST' and form.validate():
-        # Create a BannedProduct instance and add it to the database
-        banned_product = BannedProduct(product_id=product.id, justification=form.reason.data)
-        db.session.delete(banned_product)
-        db.session.commit()
+        # Buscar y eliminar el registro de BannedProduct asociado al producto
+        banned_product = db.session.query(BannedProduct).filter_by(product_id=product.id).first()
+        if banned_product:
+            db.session.delete(banned_product)
+            db.session.commit()
 
         return redirect(url_for('admin_bp.admin_index'))
 
-    return render_template('products/unban.html', product=product, category=category, status=status)
+    return render_template('products/unban.html', product=product, category=category, status=status, form=form)
