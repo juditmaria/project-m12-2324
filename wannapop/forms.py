@@ -1,7 +1,11 @@
 from flask_wtf import FlaskForm
-from wtforms import PasswordField, StringField, DecimalField, SubmitField, SelectField, FileField
+from wtforms import PasswordField, StringField, DecimalField, SubmitField, SelectField, FileField, TextAreaField
 from wtforms.validators import DataRequired, NumberRange, InputRequired, Email
 import decimal
+
+class BanForm(FlaskForm):
+    reason = TextAreaField('Reason for Ban', validators=[DataRequired()])
+    submit = SubmitField('Ban Product')
 
 class LoginForm(FlaskForm):
     email = StringField(

@@ -1,0 +1,28 @@
+{% extends 'layouts/_base.html' %}
+
+{% block title %}
+Ban del Producte amd id: {{ product.id }}
+{% endblock %}
+
+{% block content %}
+<ul>
+    <li>Nom: {{ product.title }}</li>
+    <li>Descripció: {{ product.description }}</li>
+    <li>Preu: {{ product.price }}</li>
+    <li>Categoria: {{ category.name }} </li>
+    <li>Estat: {{ status.name }} </li>
+</ul>
+<p><img src="/static/products/{{ product.photo }}" alt="{{ product.title }}" /></p>
+
+<form method="POST" action="{{ url_for('admin_bp.product_ban', product_id=product.id) }}">
+    {{ form.csrf_token }}
+    {{ form.hidden_tag() }}
+    <div class="form-group">
+        {{ form.reason.label }}
+        {{ form.reason(size=30, class="form-control") }}
+    </div>
+    <div class="form-group">
+        {{ form.submit(class="btn btn-danger") }}
+    </div>
+</form>
+{% endblock %}

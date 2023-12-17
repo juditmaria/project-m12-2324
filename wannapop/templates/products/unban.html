@@ -1,0 +1,23 @@
+{% extends 'layouts/_base.html' %}
+
+{% block title %}
+Unban del Producto con ID: {{ product.id }}
+{% endblock %}
+
+{% block content %}
+<ul>
+    <li>Nombre: {{ product.title }}</li>
+    <li>Descripción: {{ product.description }}</li>
+    <li>Precio: {{ product.price }}</li>
+    <li>Categoría: {{ category.name }} </li>
+    <li>Estatus: {{ status.name }} </li>
+</ul>
+<p><img src="/static/products/{{ product.photo }}" alt="{{ product.title }}" /></p>
+
+<!-- Formulario para enviar la solicitud de "unban" -->
+<form method="POST" action="{{ url_for('admin_bp.product_unban', product_id=product.id) }}">
+    {{ form.csrf_token }}
+    {{ form.hidden_tag() }}
+    <button type="submit" class="btn btn-success">Unban Product</button>
+</form>
+{% endblock %}

@@ -1,8 +1,8 @@
-"""Bloqueo/Desbloqueo 1
+"""ci
 
-Revision ID: 5a92f0a8f53f
+Revision ID: 4ca2fd11580a
 Revises: 
-Create Date: 2023-12-15 19:52:01.254319
+Create Date: 2023-12-17 20:34:17.722876
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '5a92f0a8f53f'
+revision = '4ca2fd11580a'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -26,11 +26,12 @@ def upgrade():
     sa.PrimaryKeyConstraint('user_id')
     )
     op.create_table('banned_products',
+    sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('product_id', sa.Integer(), nullable=False),
-    sa.Column('reason', sa.String(), nullable=False),
-    sa.Column('created', sa.DateTime(), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=True),
+    sa.Column('justification', sa.String(), nullable=False),
+    sa.Column('banned_at', sa.DateTime(), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=True),
     sa.ForeignKeyConstraint(['product_id'], ['products.id'], ),
-    sa.PrimaryKeyConstraint('product_id')
+    sa.PrimaryKeyConstraint('id')
     )
     op.create_table('orders',
     sa.Column('id', sa.Integer(), nullable=False),
