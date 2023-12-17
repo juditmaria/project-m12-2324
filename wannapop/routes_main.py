@@ -4,6 +4,7 @@ from .forms import ProfileForm
 from . import db_manager as db, mail_manager
 import secrets
 from flask import current_app
+from .models import BlockedUser
 
 # Blueprint
 main_bp = Blueprint("main_bp", __name__)
@@ -19,6 +20,7 @@ def init():
 @login_required
 def profile():
     form = ProfileForm()
+
     if form.validate_on_submit():
         something_change = False
         new_email = form.email.data
@@ -55,13 +57,17 @@ def profile():
                 return redirect(url_for("auth_bp.login"))
 
             flash("Perfil actualitzat correctament", "success")
-            
+
         return redirect(url_for('main_bp.profile'))
     else:
+        blocked_user = BlockedUser.query.filter_by(user_id=current_user.id).first()
+        if blocked_user:
+            flash(f"No es possible accedir al perfil. El teu compte està bloquejat per la següent raó: {blocked_user.message}", "danger")
+            
         form.name.data = current_user.name
-        form.email.data = current_user.email    
+        form.email.data = current_user.email
 
-        return render_template('profile.html', form = form)
+        return render_template('profile.html', form=form)
 
 @main_bp.app_errorhandler(403)
 def forbidden_access(e):

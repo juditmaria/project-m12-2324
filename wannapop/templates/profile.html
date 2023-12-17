@@ -7,6 +7,12 @@ Profile
 
 {% block content %}
 
+{% if blocked_user %}
+    <div class="alert alert-danger" role="alert">
+        No es possible crear nous productes. El teu compte està bloquejat per la següent raó: {{ blocked_user.message }}
+    </div>
+{% endif %}
+
 <form action="/profile" method="POST">
     {{ form.csrf_token }}
     <div class="form-floating mb-3">

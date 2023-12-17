@@ -19,7 +19,7 @@ def admin_users():
     if request.method == 'POST':
         user_id = request.form.get('user_id')
         action = request.form.get('action')
-        message = request.form.get('message')  # Agregamos la captura del mensaje
+        message = request.form.get('message')
 
         if action and user_id:
             user = User.query.get(user_id)
@@ -51,20 +51,26 @@ def unblock_user(user):
     else:
         flash(f'L\'usuari {user.name} no està bloquejat.', 'warning')
 
-@admin_bp.route('/admin/users/<int:user_id>', methods=['GET', 'POST'])
+@admin_bp.route('/admin/users_moderator', methods=['GET', 'POST'])
 @role_required(Role.admin)
-def admin_manage_user(user_id):
-    user = User.query.get(user_id)
-    if user:
-        if request.method == 'POST':
-            action = request.form.get('action')
+def admin_moderator():
+    if request.method == 'POST':
+        user_id = request.form.get('user_id')
+        action = request.form.get('action')
+        message = request.form.get('message')
+
+        if action and user_id:
+            user = User.query.get(user_id)
+
             if action == 'block':
-                block_user(user, request.form.get('message'))
+                block_user(user, message)
             elif action == 'unblock':
                 unblock_user(user)
 
-        blocked = BlockedUser.query.filter_by(user_id=user.id).first()
-        return render_template('admin/manage_user.html', user=user, blocked=blocked)
+    users = db.session.query(User).all()
+    blocked_users = db.session.query(BlockedUser).all()
+    
+    # Obtén la lista de IDs de usuarios bloqueados
+    blocked_user_ids = [blocked_user.user_id for blocked_user in BlockedUser.query.all()]
 
-    flash('Usuari no trobat.', 'error')
-    return redirect(url_for('admin_bp.admin_users'))
+    return render_template('admin/users_moderator.html', users=users, blocked_users=blocked_users, blocked_user_ids=blocked_user_ids)

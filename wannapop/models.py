@@ -94,6 +94,7 @@ class BlockedUser(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), primary_key=True)
     message = db.Column(db.String, nullable=False)
     created = db.Column(db.DateTime, server_default=func.now())
+    user = db.relationship('User', backref=db.backref('blocked_user', uselist=False))
 
 class BannedProduct(db.Model):
     __tablename__ = "banned_products"

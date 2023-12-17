@@ -1,0 +1,33 @@
+{% extends 'layouts/_base.html' %}
+
+{% block title %}
+Moderació d'usuaris
+{% endblock %}
+
+{% block content %}
+<form method="POST" action="{{ url_for('admin_bp.admin_moderator') }}">
+    <div class="mb-3">
+        <label for="user-select" class="form-label">Selecciona un usuario:</label>
+        <select id="user-select" name="user_id" class="form-select" required>
+            {% for user in users %}
+                {% set is_blocked = user.id in blocked_user_ids %}
+                <option value="{{ user.id }}" {% if is_blocked %} style="color: #721c24; background-color: #f8d7da;" {% endif %}>
+                    {{ user.name }} 
+
+                    {% if is_blocked %}
+                        (Bloqueado): 
+                        {% for blocked_user in blocked_users if blocked_user.user_id == user.id %}
+                            {{ blocked_user.message }}
+                        {% endfor %}
+                    {% endif %}
+                </option>
+            {% endfor %}
+
+            <input type="text" name="message" placeholder="Motiu del bloqueig" class="form-control" required>
+            <button type="submit" name="action" value="block" class="btn btn-danger btn-sm">Bloquejar</button>
+            <button type="submit" name="action" value="unblock" class="btn btn-success btn-sm">Desbloquejar</button>
+        </select>
+    </div>
+</form>
+                    
+{% endblock %}
