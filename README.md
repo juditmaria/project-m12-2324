@@ -22,6 +22,10 @@ Per a generar el fitxer de requiriments:
 
     pip freeze > requirements.txt
 
+Per a generar les taules de la base de dades:
+
+    flask db upgrade
+
 Per desactivar l'entorn:
 
     deactivate
