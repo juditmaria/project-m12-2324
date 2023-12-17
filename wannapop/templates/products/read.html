@@ -28,7 +28,14 @@ Producte {{ product.id }}
 <a class="btn btn-danger btn-xl" href="/products/delete/{{ product.id }}">Esborrar producte</a>
 {% endif %}
 {% if current_user.is_action_allowed_to_product(Action.products_moderate, product) %}
-    <a class="btn btn-primary btn-xl" href="/products/unban/{{ product.id }}">Unban</a>
+    {% if banned_info %}
+        <a class="btn btn-primary btn-xl" href="/products/unban/{{ product.id }}">Unban</a>
+    {% endif %}
+{% endif %}
+{% if current_user.is_action_allowed_to_product(Action.products_moderate, product) %}
+    {% if not banned_info %}
+        <a class="btn btn-danger btn-xl" href="/products/ban/{{ product.id }}">Ban</a>
+    {% endif %}
 {% endif %}
 
 {% endblock %}
