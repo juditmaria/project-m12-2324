@@ -7,12 +7,12 @@ Producte {{ product.id }}
 
 {% block content %}
 
-<p>Confirmes que vols eliminar el producte "{{ product.title }}"?</p>
-<p><img src="/static/products/{{ product.photo }}" alt="{{ product.title }}" /></p>
+<p>Confirmes que vols permetre el producte "{{ product.title }}"?</p>
 
-<form action="/products/delete/{{ product.id }}" method="POST">
+<form action="/admin/products/{{ product.id }}/unban" method="POST">
     {{ form.csrf_token }}
     <a class="btn btn-outline-dark btn-xl" href="/products/list">&#x3c;&#x3c; Tornar al llistat</a>
-    {{ form.submit(value="ESBORRAR",class_="btn btn-danger btn-xl") }}
+    {{ form.submit(value="PERMETRE",class_="btn btn-danger btn-xl") }}
+    {{ render_errors(form) }}
 </form>
 {% endblock %}

@@ -1,0 +1,18 @@
+{% extends 'layouts/_base.html' %}
+{% from "partials/_formhelpers.html" import render_errors %}
+
+{% block title %}
+Usuari {{ user.id }}
+{% endblock %}
+
+{% block content %}
+
+<p>Confirmes que vols desbloquejar l'usuari "{{ user.email }}"?</p>
+
+<form action="/admin/users/{{ user.id }}/unblock" method="POST">
+    {{ form.csrf_token }}
+    <a class="btn btn-outline-dark btn-xl" href="/admin/users">&#x3c;&#x3c; Tornar al llistat</a>
+    {{ form.submit(value="DESBLOQUEJAR",class_="btn btn-danger btn-xl") }}
+    {{ render_errors(form) }}
+</form>
+{% endblock %}

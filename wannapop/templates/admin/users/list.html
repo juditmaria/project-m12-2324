@@ -1,0 +1,39 @@
+{% extends 'layouts/_base.html' %}
+
+{% block title %}
+Usuaris
+{% endblock %}
+
+{% block content %}
+<table class="table table-bordered table-striped" style="background-color: #fefefe;">
+	<thead>
+		<tr>
+			<th>ID</th>
+			<th>NOM</th>
+			<th>EMAIL</th>
+			<th>ROL</th>
+			<th>BLOCKED?</th>
+		</tr>
+	</thead>
+	<tbody>
+		{% for (user, blocked) in users %}
+		<tr class="{{ 'blocked' if blocked }}" alt="wowww">
+            <td>{{ user.id }}</td>
+            <td>{{ user.name }}</td>
+            <td>{{ user.email }}</td>
+            <td>{{ user.role }}</td>
+			<td>
+			{% if blocked %}
+				<div><span>🔴</span> <a href="/admin/users/{{ user.id }}/unblock" alt="Unblock">🔄</a></div>
+				<div><small>{{ blocked.message }}</small></div>
+			{% else %}
+				<div><span>🟢</span> <a href="/admin/users/{{ user.id }}/block" alt="Block">🔄</a></div>
+			{% endif %}
+			</td>
+		</tr>
+		{% endfor %}
+	</tbody>
+</table>
+<a class="btn btn-outline-dark btn-xl" href="/admin">&#x3c;&#x3c; Tornar la pàgina d'administració</a>
+
+{% endblock %}

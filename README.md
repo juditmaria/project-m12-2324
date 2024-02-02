@@ -1,6 +1,6 @@
-# 2daw-m12-p1-s0-solution
+# 2daw-m12-p1-solution
 
-Proposta de solució de l'sprint 0 del projecte 1 dins del mòdul de projecte (M12) de 2n de DAW.
+Proposta de solució del projecte 1 dins del mòdul de projecte (M12) de 2n de DAW.
 
 ## Setup
 
@@ -22,17 +22,17 @@ Per a generar el fitxer de requiriments:
 
     pip freeze > requirements.txt
 
-Per a generar les taules de la base de dades:
-
-    flask db upgrade
-
 Per desactivar l'entorn:
 
     deactivate
 
 ### Base de dades
 
-La base de dades [SQLite](https://www.sqlite.org) s'ha de dir `database.db`. S'ha creat amb l'script [database.sql](./database.sql).
+Crea una base de dades SQLite a partir de l'script [0_tables.sql](./sqlite/0_tables.sql). Tens una d'exemple creada amb les dades del fitxer [1_mock_data.sql](./sqlite/1_mock_data.sql). Hi ha tres usuaris de prova (un `admin` i dos `wanner`) i tots tres tenen com a contrasenya `patata`.
+
+### Fitxer de configuració
+
+Crea un fitxer `.env` amb els paràmetres de configuració. Pots fer servir el fitxer [.env.exemple](./.env.exemple).
 
 ## Run des de terminal
 
@@ -42,7 +42,9 @@ Executa:
 
 I obre un navegador a l'adreça: [http://127.0.0.1:5000](http://127.0.0.1:5000).
 
-Aquesta comanda executa el codi de `wsgi.py` 
+Aquesta comanda executa el codi de [wsgi.py](./wsgi.py).
+
+Per autenticarte, consula al fitxer [database.sql](./sqlite/database.sql) els usuaris de prova disponibles.
 
 ## Debug amb Visual Code
 

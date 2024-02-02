@@ -24,6 +24,24 @@ class RegisterForm(FlaskForm):
     )
     submit = SubmitField()
 
+class ProfileForm(FlaskForm):
+    name = StringField(
+        validators = [DataRequired()]
+    )
+    email = StringField(
+        validators = [Email(), DataRequired()]
+    )
+    password = PasswordField(
+        # no es obligatori canviar-lo
+    )
+    submit = SubmitField()
+
+class ResendForm(FlaskForm):
+    email = StringField(
+        validators = [Email(), DataRequired()]
+    )
+    submit = SubmitField()
+
 class ProductForm(FlaskForm):
     title = StringField(
         validators = [DataRequired()]
@@ -40,8 +58,41 @@ class ProductForm(FlaskForm):
     category_id = SelectField(
         validators = [InputRequired()]
     )
+    status_id = SelectField(
+        validators = [InputRequired()]
+    )
     submit = SubmitField()
 
-# Formulari generic per esborrar i aprofitar la CSRF Protection
-class DeleteForm(FlaskForm):
+class CategoryForm(FlaskForm):
+    name = StringField(
+        validators = [DataRequired()]
+    )
+    slug = StringField(
+        validators = [DataRequired()]
+    )
+    submit = SubmitField()
+
+class StatusForm(FlaskForm):
+    name = StringField(
+        validators = [DataRequired()]
+    )
+    slug = StringField(
+        validators = [DataRequired()]
+    )
+    submit = SubmitField()
+
+class BlockUserForm(FlaskForm):
+    message = StringField(
+        validators = [DataRequired()]
+    )
+    submit = SubmitField()
+
+class BanProductForm(FlaskForm):
+    reason = StringField(
+        validators = [DataRequired()]
+    )
+    submit = SubmitField()
+
+# Formulari generic per a confirmar una acció
+class ConfirmForm(FlaskForm):
     submit = SubmitField()

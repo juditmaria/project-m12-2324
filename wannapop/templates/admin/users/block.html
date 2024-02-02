@@ -1,0 +1,22 @@
+{% extends 'layouts/_base.html' %}
+{% from "partials/_formhelpers.html" import render_errors %}
+
+{% block title %}
+Usuari {{ user.id }}
+{% endblock %}
+
+{% block content %}
+
+<p>Confirmes que vols bloquejar l'usuari "{{ user.email }}"?</p>
+
+<form action="/admin/users/{{ user.id }}/block" method="POST">
+    {{ form.csrf_token }}
+    <div class="form-floating mb-3">
+        {{ form.message(class_="form-control") }}
+        {{ form.message.label }}
+     </div>
+    <a class="btn btn-outline-dark btn-xl" href="/admin/users">&#x3c;&#x3c; Tornar al llistat</a>
+    {{ form.submit(value="BLOQUEJAR",class_="btn btn-danger btn-xl") }}
+    {{ render_errors(form) }}
+</form>
+{% endblock %}
