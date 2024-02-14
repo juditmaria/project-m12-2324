@@ -1,11 +1,10 @@
-from flask import Blueprint, render_template, redirect, url_for, flash, abort
+from flask import Blueprint, render_template, redirect, url_for, flash, abort, request
 from flask_login import current_user
 from werkzeug.utils import secure_filename
 from .models import Product, Category, Status, BlockedUser, BannedProduct
 from .forms import ProductForm, ConfirmForm
 from .helper_role import Action, perm_required
 from . import db_manager as db
-import uuid
 import os
 
 # Blueprint
@@ -135,4 +134,24 @@ def product_delete(product_id):
         abort(404)
 
     if not current_user.is_action_allowed_to_product(Action.products_delete, product):
-        abort
+        abort(403)
+
+    # Crear el formulario de confirmación
+    confirm_form = ConfirmForm()
+
+    if request.method == 'POST':
+        # Si la solicitud es un POST, significa que el formulario de confirmación ha sido enviado
+        if confirm_form.validate_on_submit():
+            # Eliminar el producto
+            db.session.delete(product)
+            db.session.commit()
+            flash("Product deleted successfully", "success")
+            return redirect(url_for('products_bp.product_list'))
+        else:
+            # Si el formulario de confirmación no es válido, renderizar de nuevo la plantilla con el formulario
+            flash("Error in confirmation form", "danger")
+            return render_template('products/delete.html', product=product, confirm_form=confirm_form)
+    
+    # Si la solicitud es un GET, simplemente renderizar la plantilla con el formulario de confirmación
+    return render_template('products/delete.html', product=product, confirm_form=confirm_form, form=confirm_form)
+
