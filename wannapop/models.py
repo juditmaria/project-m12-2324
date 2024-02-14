@@ -3,8 +3,9 @@ from . import db_manager as db
 from sqlalchemy.sql import func
 from sqlalchemy.ext.hybrid import hybrid_property
 from werkzeug.security import check_password_hash, generate_password_hash
+from .mixins import BaseMixin, SerializableMixin
 
-class User(UserMixin, db.Model):
+class User(UserMixin, db.Model, SerializableMixin):
     __tablename__ = "users"
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, unique=True, nullable=False)
@@ -69,7 +70,7 @@ class User(UserMixin, db.Model):
         # Si hem arribat fins aquí, l'usuari té permisos
         return True
 
-class Product(db.Model):
+class Product(db.Model, SerializableMixin, BaseMixin):
     __tablename__ = "products"
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String, nullable=False)
@@ -82,25 +83,25 @@ class Product(db.Model):
     created = db.Column(db.DateTime, server_default=func.now())
     updated = db.Column(db.DateTime, server_default=func.now(), onupdate=func.now())
 
-class Category(db.Model):
+class Category(db.Model, SerializableMixin, BaseMixin):
     __tablename__ = "categories"
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, nullable=False)
     slug = db.Column(db.String, nullable=False)
 
-class Status(db.Model):
+class Status(db.Model, SerializableMixin, BaseMixin):
     __tablename__ = "statuses"
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, nullable=False)
     slug = db.Column(db.String, nullable=False)
 
-class BlockedUser(db.Model):
+class BlockedUser(db.Model, SerializableMixin, BaseMixin):
     __tablename__ = "blocked_users"
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), primary_key=True)
     message = db.Column(db.String, nullable=False)
     created = db.Column(db.DateTime, server_default=func.now())
 
-class BannedProduct(db.Model):
+class BannedProduct(db.Model, SerializableMixin, BaseMixin):
     __tablename__ = "banned_products"
     product_id = db.Column(db.Integer, db.ForeignKey("products.id"), primary_key=True)
     reason = db.Column(db.String, nullable=False)
