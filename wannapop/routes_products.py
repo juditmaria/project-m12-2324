@@ -6,6 +6,8 @@ from .forms import ProductForm, ConfirmForm
 from .helper_role import Action, perm_required
 from . import db_manager as db
 import os
+import uuid
+from flask import current_app
 
 # Blueprint
 products_bp = Blueprint("products_bp", __name__)
@@ -155,3 +157,18 @@ def product_delete(product_id):
     # Si la solicitud es un GET, simplemente renderizar la plantilla con el formulario de confirmación
     return render_template('products/delete.html', product=product, confirm_form=confirm_form, form=confirm_form)
 
+__uploads_folder = os.path.abspath(os.path.dirname(__file__)) + "/static/products/"
+
+def __manage_photo_file(photo_file):
+    # si hi ha fitxer
+    if photo_file.data:
+        filename = photo_file.data.filename.lower()
+
+        # és una foto
+        if filename.endswith(('.png', '.jpg', '.jpeg')):
+            # M'asseguro que el nom del fitxer és únic per evitar col·lisions
+            unique_filename = str(uuid.uuid4()) + "-" + secure_filename(filename)
+            photo_file.data.save(__uploads_folder + unique_filename)
+            return unique_filename
+
+    return None
