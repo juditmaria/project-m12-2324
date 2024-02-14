@@ -67,8 +67,8 @@ def profile():
 
 @main_bp.app_errorhandler(403)
 def forbidden_access(e):
-  return render_template('403.html',message=e), 403
+    return render_template('403.html', message=e), 403
 
 @main_bp.app_errorhandler(404)
 def not_allowed(e):
-  return render_template('404.html',message=e), 404
+    return render_template('404.html', message=e), 404

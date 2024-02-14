@@ -1,7 +1,9 @@
 from . import db_manager as db
+from flask import flash, redirect, url_for
+from collections import OrderedDict
+from sqlalchemy.engine.row import Row
 
-class BaseMixin():
-    
+class BaseMixin:
     @classmethod
     def create(cls, **kwargs):
         r = cls(**kwargs)
@@ -33,14 +35,10 @@ class BaseMixin():
     def db_query(cls, *args):
         return db.session.query(cls, *args)
 
-    # @classmethod
-    # def db_query_with(cls, join_cls):
-    #     return cls.db_query(join_cls).join(join_cls)
-
     @classmethod
-    def db_query_with(cls, join_cls, outerjoin_cls = []):
-        joins = join_cls if type(join_cls) is list else [join_cls]
-        ojoins = outerjoin_cls if type(outerjoin_cls) is list else [outerjoin_cls]
+    def db_query_with(cls, join_cls, outerjoin_cls=[]):
+        joins = join_cls if isinstance(join_cls, list) else [join_cls]
+        ojoins = outerjoin_cls if isinstance(outerjoin_cls, list) else [outerjoin_cls]
         args = tuple(joins + ojoins)
         query = cls.db_query(*args)
         for c in joins:
@@ -66,11 +64,11 @@ class BaseMixin():
         return cls.db_query().filter_by(**kwargs).order_by(cls.id.asc()).all()
     
     @classmethod
-    def get_with(cls, id, join_cls, outerjoin_cls = []):
+    def get_with(cls, id, join_cls, outerjoin_cls=[]):
         return cls.db_query_with(join_cls, outerjoin_cls).filter(cls.id == id).one_or_none()
 
     @classmethod
-    def get_all_with(cls, join_cls, outerjoin_cls = []):
+    def get_all_with(cls, join_cls, outerjoin_cls=[]):
         return cls.db_query_with(join_cls, outerjoin_cls).order_by(cls.id.asc()).all()
 
     @staticmethod
@@ -79,11 +77,7 @@ class BaseMixin():
         logging.basicConfig()
         logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
 
-from collections import OrderedDict
-from sqlalchemy.engine.row import Row
-
-class SerializableMixin():
-
+class SerializableMixin:
     exclude_attr = []
 
     def to_dict(self):
@@ -97,7 +91,7 @@ class SerializableMixin():
     def to_dict_collection(collection):
         result = []
         for x in collection:  
-            if (type(x) is Row):
+            if isinstance(x, Row):
                 obj = {}
                 first = True
                 for y in x:
@@ -117,3 +111,20 @@ class SerializableMixin():
                 # only model
                 result.append(x.to_dict())
         return result
+
+class ProductMixin:
+    @staticmethod
+    def ban_product(product, reason):
+        from .models import BannedProduct
+        banned_product = BannedProduct(product_id=product.id, reason=reason)
+        db.session.add(banned_product)
+        db.session.commit()
+        flash("Producto prohibido", "success")
+        return redirect(url_for('products_bp.product_list'))
+
+    @staticmethod
+    def unban_product(banned_product):
+        db.session.delete(banned_product)
+        db.session.commit()
+        flash("Producto permitido", "success")
+        return redirect(url_for('products_bp.product_list'))

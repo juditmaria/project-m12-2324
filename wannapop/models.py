@@ -5,7 +5,8 @@ from sqlalchemy.ext.hybrid import hybrid_property
 from werkzeug.security import check_password_hash, generate_password_hash
 from .mixins import BaseMixin, SerializableMixin
 
-class User(UserMixin, db.Model, SerializableMixin):
+
+class User(UserMixin, db.Model, SerializableMixin, BaseMixin):
     __tablename__ = "users"
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, unique=True, nullable=False)
@@ -22,7 +23,6 @@ class User(UserMixin, db.Model, SerializableMixin):
     
     @hybrid_property
     def password(self):
-        # https://stackoverflow.com/a/31915355
         return ""
     
     @password.setter
@@ -44,7 +44,7 @@ class User(UserMixin, db.Model, SerializableMixin):
     def is_wanner(self):
         return self.role == "wanner"
 
-    def is_action_allowed_to_product(self, action, product = None, banned = None):
+    def is_action_allowed_to_product(self, action, product=None, banned=None):
         from .helper_role import _permissions, Action
 
         current_permissions = _permissions[self.role]
@@ -54,20 +54,15 @@ class User(UserMixin, db.Model, SerializableMixin):
         if not action in current_permissions:
             return False
         
-        # Un/a usuari/a wanner sols pot modificar el seu propi producte
-        if (action == Action.products_update and self.is_wanner()):
+        if action == Action.products_update and self.is_wanner():
             return product and self.id == product.seller_id
         
-        # Un/a usuari/a wanner sols pot eliminar el seu propi producte
-        if (action == Action.products_delete and self.is_wanner()):
+        if action == Action.products_delete and self.is_wanner():
             return product and self.id == product.seller_id
         
-        # Un/a usuari/a wanner sols pot veure els productes no prohibits,
-        # exceptuant els seus propis, tot i que hagin estat prohibits
-        if (action == Action.products_read and self.is_wanner()):
+        if action == Action.products_read and self.is_wanner():
             return product and (not banned or self.id == product.seller_id)
         
-        # Si hem arribat fins aquí, l'usuari té permisos
         return True
 
 class Product(db.Model, SerializableMixin, BaseMixin):

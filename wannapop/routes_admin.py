@@ -3,6 +3,7 @@ from .models import User, BlockedUser, Product, BannedProduct
 from .helper_role import Role, role_required
 from .forms import ConfirmForm, BlockUserForm, BanProductForm
 from . import db_manager as db
+from .mixins import ProductMixin
 
 # Blueprint
 admin_bp = Blueprint("admin_bp", __name__)
@@ -28,25 +29,21 @@ def block_user(user_id):
     (user, blocked) = result
 
     if blocked:
-        flash("Compte d'usuari/a ja bloquejat", "error")
+        flash("User account already blocked", "error")
         return redirect(url_for('admin_bp.admin_users'))
 
     if user.is_admin_or_moderator():
-        flash("Sols es poden bloquejar els usuaris wanner", "error")
+        flash("Only 'wanner' users can be blocked", "error")
         return redirect(url_for('admin_bp.admin_users'))
 
     form = BlockUserForm()
     if form.validate_on_submit():
-        new_block = BlockedUser();
-        # carregar dades de la URL
+        new_block = BlockedUser()
         new_block.user_id = user.id
-        # carregar dades del formulari
         form.populate_obj(new_block)
-        # insert!
         db.session.add(new_block)
         db.session.commit()
-        # retornar al llistat
-        flash("Compte d'usuari/a bloquejat", "success")
+        flash("User account blocked", "success")
         return redirect(url_for('admin_bp.admin_users'))
 
     return render_template('admin/users/block.html', user=user, form=form)
@@ -61,18 +58,18 @@ def unblock_user(user_id):
     (user, blocked) = result
 
     if not blocked:
-        flash("Compte d'usuari/a no bloquejat", "error")
+        flash("User account not blocked", "error")
         return redirect(url_for('admin_bp.admin_users'))
 
     if user.is_admin_or_moderator():
-        flash("Sols es poden bloquejar els usuaris wanner", "error")
+        flash("Only 'wanner' users can be blocked", "error")
         return redirect(url_for('admin_bp.admin_users'))
     
     form = ConfirmForm()
     if form.validate_on_submit():
         db.session.delete(blocked)
         db.session.commit()
-        flash("Compte d'usuari/a desbloquejat", "success")
+        flash("User account unblocked", "success")
         return redirect(url_for('admin_bp.admin_users'))
     
     return render_template('admin/users/unblock.html', user=user, form=form)
@@ -80,50 +77,22 @@ def unblock_user(user_id):
 @admin_bp.route('/admin/products/<int:product_id>/ban', methods=["GET", "POST"])
 @role_required(Role.moderator)
 def ban_product(product_id):
-    result = db.session.query(Product, BannedProduct).outerjoin(BannedProduct).filter(Product.id == product_id).one_or_none()
-    if not result:
+    product = Product.query.get(product_id)
+    if not product:
         abort(404)
     
-    (product, banned) = result
-
-    if banned:
-        flash("Producte ja prohibit", "error")
-        return redirect(url_for('products_bp.product_list'))
-
     form = BanProductForm()
     if form.validate_on_submit():
-        new_banned = BannedProduct();
-        # carregar dades de la URL
-        new_banned.product_id = product.id
-        # carregar dades del formulari
-        form.populate_obj(new_banned)
-        # insert!
-        db.session.add(new_banned)
-        db.session.commit()
-        # retornar al llistat
-        flash("Producte prohibit", "success")
-        return redirect(url_for('products_bp.product_list'))
-
+        reason = form.reason.data
+        return ProductMixin.ban_product(product, reason)
+    
     return render_template('admin/products/ban.html', product=product, form=form)
 
 @admin_bp.route('/admin/products/<int:product_id>/unban', methods=["GET", "POST"])
 @role_required(Role.moderator)
 def unban_product(product_id):
-    result = db.session.query(Product, BannedProduct).outerjoin(BannedProduct).filter(Product.id == product_id).one_or_none()
-    if not result:
+    banned_product = BannedProduct.query.get(product_id)
+    if not banned_product:
         abort(404)
     
-    (product, banned) = result
-    
-    if not banned:
-        flash("Producte no prohibit", "error")
-        return redirect(url_for('products_bp.product_list'))
-    
-    form = ConfirmForm()
-    if form.validate_on_submit():
-        db.session.delete(banned)
-        db.session.commit()
-        flash("Producte permès", "success")
-        return redirect(url_for('products_bp.product_list'))
-
-    return render_template('admin/products/unban.html', product=product, form=form)
+    return ProductMixin.unban_product(banned_product)
