@@ -3,6 +3,9 @@ from .models import User, BlockedUser, Product, BannedProduct
 from .helper_role import Role, role_required
 from .forms import ConfirmForm, BlockUserForm, BanProductForm
 from . import db_manager as db
+from .models import User, BlockedUser
+from .mixins import BaseMixin, SerializableMixin
+
 
 # Blueprint
 admin_bp = Blueprint("admin_bp", __name__)
@@ -21,45 +24,38 @@ def admin_users():
 @admin_bp.route('/admin/users/<int:user_id>/block', methods=["GET", "POST"])
 @role_required(Role.admin)
 def block_user(user_id):
-    result = db.session.query(User, BlockedUser).outerjoin(BlockedUser).filter(User.id == user_id).one_or_none()
-    if not result:
+    user = User.query.get(user_id)
+    if not user:
         abort(404)
     
-    (user, blocked) = result
-
-    if blocked:
-        flash("Compte d'usuari/a ja bloquejat", "error")
-        return redirect(url_for('admin_bp.admin_users'))
-
     if user.is_admin_or_moderator():
         flash("Sols es poden bloquejar els usuaris wanner", "error")
         return redirect(url_for('admin_bp.admin_users'))
 
+    blocked = BlockedUser.query.filter_by(user_id=user.id).first()
+    if blocked:
+        flash("Compte d'usuari/a ja bloquejat", "error")
+        return redirect(url_for('admin_bp.admin_users'))
+
     form = BlockUserForm()
     if form.validate_on_submit():
-        new_block = BlockedUser();
-        # carregar dades de la URL
-        new_block.user_id = user.id
-        # carregar dades del formulari
-        form.populate_obj(new_block)
-        # insert!
-        db.session.add(new_block)
-        db.session.commit()
-        # retornar al llistat
-        flash("Compte d'usuari/a bloquejat", "success")
-        return redirect(url_for('admin_bp.admin_users'))
+        new_block = BlockedUser.create(user_id=user.id, message=form.message.data)
+        if new_block:
+            flash("Compte d'usuari/a bloquejat", "success")
+            return redirect(url_for('admin_bp.admin_users'))
+        else:
+            flash("Error en bloquejar el compte d'usuari/a", "error")
 
     return render_template('admin/users/block.html', user=user, form=form)
 
 @admin_bp.route('/admin/users/<int:user_id>/unblock', methods=["GET", "POST"])
 @role_required(Role.admin)
 def unblock_user(user_id):
-    result = db.session.query(User, BlockedUser).outerjoin(BlockedUser).filter(User.id == user_id).one_or_none()
-    if not result:
+    user = User.query.get(user_id)
+    if not user:
         abort(404)
-    
-    (user, blocked) = result
 
+    blocked = BlockedUser.query.filter_by(user_id=user.id).first()
     if not blocked:
         flash("Compte d'usuari/a no bloquejat", "error")
         return redirect(url_for('admin_bp.admin_users'))
@@ -70,11 +66,12 @@ def unblock_user(user_id):
     
     form = ConfirmForm()
     if form.validate_on_submit():
-        db.session.delete(blocked)
-        db.session.commit()
-        flash("Compte d'usuari/a desbloquejat", "success")
-        return redirect(url_for('admin_bp.admin_users'))
-    
+        if blocked.delete():
+            flash("Compte d'usuari/a desbloquejat", "success")
+            return redirect(url_for('admin_bp.admin_users'))
+        else:
+            flash("Error en desbloquejar el compte d'usuari/a", "error")
+
     return render_template('admin/users/unblock.html', user=user, form=form)
 
 @admin_bp.route('/admin/products/<int:product_id>/ban', methods=["GET", "POST"])

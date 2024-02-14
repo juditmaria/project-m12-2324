@@ -5,7 +5,7 @@ from sqlalchemy.ext.hybrid import hybrid_property
 from werkzeug.security import check_password_hash, generate_password_hash
 from .mixins import BaseMixin, SerializableMixin
 
-class User(UserMixin, db.Model, SerializableMixin):
+class User(UserMixin, db.Model, SerializableMixin, BaseMixin):
     __tablename__ = "users"
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, unique=True, nullable=False)
