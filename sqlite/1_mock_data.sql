@@ -48,3 +48,15 @@ INSERT INTO discounts(item_id,discount) VALUES (3,20);
 INSERT INTO discounts(item_id,discount) VALUES (5,30);
 INSERT INTO discounts(item_id,discount) VALUES (7,40);
 INSERT INTO discounts(item_id,discount) VALUES (9,50);
+
+-- Inserción en la tabla orders
+INSERT INTO orders (product_id, buyer_id, offer, created) VALUES
+(1, 1, 499.99, DATETIME('now')),
+(2, 2, 15.99, DATETIME('now')),
+(3, 3, 7.99, DATETIME('now'));
+
+-- Inserción en la tabla confirmed_orders
+INSERT INTO confirmed_orders (order_id, created) VALUES
+(1, DATETIME('now')),
+(2, DATETIME('now')),
+(3, DATETIME('now'));
