@@ -136,6 +136,9 @@ class Order(db.Model, BaseMixin, SerializableMixin):
     offer = db.Column(db.Numeric(precision=10, scale=2), nullable=False)
     created = db.Column(db.DateTime, server_default=func.now())
 
+    # Definir relación con el modelo Product
+    product = db.relationship('Product', backref='orders')
+
 # Taula confirmed_orders
 class ConfirmedOrder(db.Model, BaseMixin, SerializableMixin):
     __tablename__ = "confirmed_orders"
