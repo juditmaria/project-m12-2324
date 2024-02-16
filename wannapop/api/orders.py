@@ -7,15 +7,11 @@ from flask import current_app, request
 
 @api_bp.route('/orders', methods=['POST'])
 def create_order():
-    try:
-        data = json_request(['product_id', 'buyer_id', 'offer'])
-    except Exception as e:
-        current_app.logger.debug(e)
-        return bad_request(str(e))
-    else:
-        order = Order.create(**data)
-        current_app.logger.debug("CREATED order: {}".format(order.to_dict()))
-        return json_response(order.to_dict(), 201)
+    data = request.json
+    # Ejemplo: Crear una nueva oferta en la base de datos
+    order = Order(product_id=data.get('product_id'), buyer_id=data.get('buyer_id'), offer=data.get('offer'))
+    order.save()
+    return jsonify({"data": order.to_dict(), "success": True}), 201
     
    
 # Editar una orden
@@ -23,18 +19,15 @@ def create_order():
 def update_order(id):
     order = Order.query.get(id)
     if order:
-        try:
-            data = json_request(['product_id', 'buyer_id', 'offer'], False)
-        except Exception as e:
-            current_app.logger.debug(e)
-            return bad_request(str(e))
+        data = request.json
+        order.offer = data.get('offer')
+        if order.save():  # Guardar el pedido y confirmar la transacción
+            return jsonify({"data": order.to_dict(), "success": True}), 200
         else:
-            order.update(**data)
-            current_app.logger.debug("UPDATED order: {}".format(order.to_dict()))
-            return json_response(order.to_dict())
+            return jsonify({"error": "Internal Server Error", "message": "Error updating order", "success": False}), 500
     else:
-        current_app.logger.debug("Order {} not found".format(id))
-        return not_found("Order not found")
+        return jsonify({"error": "Not Found", "message": "Order not found", "success": False}), 404
+
     
 
 
@@ -45,8 +38,6 @@ def delete_order(id):
     order = Order.query.get(id)
     if order:
         order.delete()
-        current_app.logger.debug("DELETED order: {}".format(id))
-        return json_response(order.to_dict())
+        return jsonify({"success": True}), 200
     else:
-        current_app.logger.debug("Order {} not found".format(id))
-        return not_found("Order not found")
+        return jsonify({"error": "Not Found", "message": "Order not found", "success": False}), 404
