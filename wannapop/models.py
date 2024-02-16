@@ -5,6 +5,7 @@ from sqlalchemy.ext.hybrid import hybrid_property
 from werkzeug.security import check_password_hash, generate_password_hash
 from .mixins import BaseMixin, SerializableMixin
 from datetime import timedelta, timezone, datetime
+import logging
 import secrets
 
 class User(UserMixin, db.Model, SerializableMixin, BaseMixin):
@@ -56,6 +57,7 @@ class User(UserMixin, db.Model, SerializableMixin, BaseMixin):
         self.__password = generate_password_hash(plain_text_password, method="scrypt")
 
     def check_password(self, some_password):
+        logging.debug(f"Comparing passwords for user {self.email}")
         return check_password_hash(self.__password, some_password)
 
     def is_admin(self):
@@ -127,7 +129,6 @@ class BannedProduct(db.Model, SerializableMixin, BaseMixin):
     product_id = db.Column(db.Integer, db.ForeignKey("products.id"), primary_key=True)
     reason = db.Column(db.String, nullable=False)
     created = db.Column(db.DateTime, server_default=func.now())
-
 
 #Taula order
 class Order(db.Model, BaseMixin, SerializableMixin):
