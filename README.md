@@ -2,11 +2,15 @@
 
 Proposta de solució de l'sprint 0 del projecte 1 dins del mòdul de projecte (M12) de 2n de DAW.
 
-#MEMBRES
+# MEMBRES
 Membre1 - Judit
+
   categories, products, orders
+  
 Membre - Mireia
+
   users, orders, statuses
+  
 ## Setup
 
 ### Python Virtual Environment
