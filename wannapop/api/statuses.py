@@ -10,3 +10,4 @@ def list_statuses():
     statuses = Status.query.all()
     data = [status.to_dict() for status in statuses]
     return jsonify({"data": data, "success": True})
+    

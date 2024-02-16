@@ -4,7 +4,8 @@ from sqlalchemy.sql import func
 from sqlalchemy.ext.hybrid import hybrid_property
 from werkzeug.security import check_password_hash, generate_password_hash
 from .mixins import BaseMixin, SerializableMixin
-
+from datetime import timedelta, timezone, datetime
+import secrets
 
 class User(UserMixin, db.Model, SerializableMixin, BaseMixin):
     __tablename__ = "users"
@@ -17,9 +18,34 @@ class User(UserMixin, db.Model, SerializableMixin, BaseMixin):
     email_token = db.Column(db.String, nullable=True, server_default=None)
     created = db.Column(db.DateTime, server_default=func.now())
     updated = db.Column(db.DateTime, server_default=func.now(), onupdate=func.now())
+    
+    token = db.Column(db.String, unique=True, nullable=True)
+    token_expiration = db.Column(db.DateTime, nullable=True)
 
     def get_id(self):
         return self.email
+    
+    def get_token(self, expires_in=3600):
+        now = datetime.now(timezone.utc)
+        if self.token and self.token_expiration.replace(tzinfo=timezone.utc) > now + timedelta(seconds=60):
+            return self.token
+        self.token = secrets.token_hex(16)
+        self.token_expiration = now + timedelta(seconds=expires_in)
+        db.session.add(self)
+        db.session.commit()
+        return self.token
+
+    def revoke_token(self):
+        self.token_expiration = datetime.now(timezone.utc) - timedelta(seconds=1)
+        db.session.add(self)
+        db.session.commit()
+
+    @staticmethod
+    def check_token(token):
+        user = User.get_filtered_by(token=token)
+        if user is None or user.token_expiration.replace(tzinfo=timezone.utc) < datetime.now(timezone.utc):
+            return None
+        return user
     
     @hybrid_property
     def password(self):
