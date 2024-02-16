@@ -6,30 +6,6 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from .mixins import BaseMixin, SerializableMixin
 
 
-# Taula items
-class Item(db.Model, BaseMixin, SerializableMixin):
-    __tablename__ = "items"
-    id = db.Column(db.Integer, primary_key=True)
-    store_id = db.Column(db.Integer, db.ForeignKey("stores.id"), nullable=False)
-    nom = db.Column(db.String, nullable=False)
-    unitats = db.Column(db.Integer, nullable=False)
-
-# Taula stores
-class Store(db.Model, BaseMixin, SerializableMixin):
-    __tablename__ = "stores"
-    id = db.Column(db.Integer, primary_key=True)
-    nom = db.Column(db.String, nullable=False)
-
-    def get_items(self):
-        return Item.get_all_filtered_by(store_id = self.id)
-    
-    # Taula item_discount
-class Discount(db.Model, BaseMixin, SerializableMixin):
-    __tablename__ = "discounts"
-    item_id = db.Column(db.Integer, db.ForeignKey("items.id"), primary_key=True)
-    discount = db.Column(db.Integer, nullable=False)
-    created = db.Column(db.DateTime, server_default=func.now())
-
 class User(UserMixin, db.Model, SerializableMixin, BaseMixin):
     __tablename__ = "users"
     id = db.Column(db.Integer, primary_key=True)
